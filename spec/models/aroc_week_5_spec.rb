@@ -20,20 +20,23 @@ describe 'ActiveRecord Obstacle Course, Week 5' do
     expected_result = ['Abercrombie', 'Banana Republic', 'Calvin Klein', 'Dickies', 'Eddie Bauer', 'Fox', 'Giorgio Armani', 'Izod', 'J.crew']
 
     # ----------------------- Using Ruby -------------------------
-    items = Item.all
-
-    ordered_items = items.map do |item|
-      item if item.orders.present?
-    end.compact
-
-    ordered_items_names = ordered_items.map(&:name)
-    ordered_items_names.sort
+    # items = Item.all
+    #
+    # ordered_items = items.map do |item|
+    #   item if item.orders.present?
+    # end.compact
+    #
+    # ordered_items_names = ordered_items.map(&:name)
+    # ordered_items_names.sort
     # ------------------------------------------------------------
 
     # ------------------ ActiveRecord Solution ----------------------
     # Solution goes here
     # When you find a solution, experiment with adjusting your method chaining
     # Which ones are you able to switch around without relying on Ruby's Enumerable methods?
+    ordered_items_names = Item.distinct.joins(:order_items).pluck(:name).sort
+        # Can swap distinct + join, but once you pluck the object turns to ruby array and you can sort but not call AR methods
+        # sort can'y be before join/discinct, but can swap with pluck
     # ---------------------------------------------------------------
 
     # Expectations
@@ -53,7 +56,9 @@ describe 'ActiveRecord Obstacle Course, Week 5' do
     # Zoolander      |         6
 
     # ------------------ ActiveRecord Solution ----------------------
-    custom_results = []
+
+    custom_results = Order.joins(:user).group('users.name').count
+    # binding.pry
     # ---------------------------------------------------------------
 
     expect(custom_results[0].name).to eq(@user_3.name)
